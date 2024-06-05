@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+      layout:decorate="~{layouts/layout}">
+      
+  <div layout:fragment="content">
+	  <h1>회원 탈퇴</h1>
+	  
+	
+	<!-- 회원 탈퇴 폼 -->
+	<form id="delete" action="/member/memberDelete" method="post" role="form">
+	    <input type="password" id="checkpassword" name="checkpassword" placeholder="비밀번호를 입력하세요"> <!-- 비밀번호 입력 -->
+	    <button type="submit">회원 탈퇴</button>
+	    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"> <!-- 얘를 넣어야 포스트로 넘어갈수있음 -->
+	</form>
+	
+	<div th:if="${errorMessage}" class="errorMessage" th:text="${errorMessage}" 
+		style="color: red; font-weight: bold;">
+	</div>
+
+	
+  </div>
+  
+
+</html>
+
+
+
+

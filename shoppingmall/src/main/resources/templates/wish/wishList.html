@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        // 페이지 로드 시 초기 설정
+        $(document).ready(function(){
+            // 페이지 로드 시 필요한 기능을 여기에 추가
+        });
+
+        // 찜목록에서 아이템 제거 기능
+        function deleteWishItem(obj){
+            let wishItemId = obj.dataset.id;
+            let token = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
+
+            let url = "/wish/" + wishItemId;
+
+            $.ajax({
+                url: url,
+                type: "DELETE",
+                beforeSend: function(xhr){
+                    // 전송 전에 CSRF 토큰 설정
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function(result){
+                    alert("찜 목록에서 아이템이 성공적으로 제거되었습니다.");
+                    location.reload();
+                },
+                error: function(){
+                    alert('계속하려면 로그인 해주세요.');
+                    location.href='/members/login';
+                }
+            });
+        }
+
+        // 추가적인 JavaScript 기능은 필요에 따라 여기에 구현
+    </script>
+</th:block>
+
+<th:block layout:fragment="css">
+    <style>
+        .content-mg {
+            margin: 2% 25%;
+            margin-bottom: 100px;
+        }
+        .repImgDiv {
+            margin-right: 15px;
+            height: auto;
+        }
+        .repImg {
+            height: 100px;
+            width: 100px;
+        }
+        .fs18 {
+            font-size: 18px;
+        }
+        .fs24 {
+            font-size: 24px;
+        }
+         .mb-2 {
+        margin-bottom: 0.5rem; /* 버튼 간의 간격을 위한 스타일 */
+    }
+    </style>
+</th:block>
+
+<div layout:fragment="content" class="content-mg">
+    <h1>찜목록</h1>
+    <br>
+
+    <div>
+        <table class="table">
+            <colgroup>
+                <col width="15%"/>
+                <col width="70%"/>
+                <col width="15%"/>
+            </colgroup>
+            <thead>
+                <tr class="text-center">
+                    <td>이미지</td>
+                    <td>상품 정보</td>
+                    <td>작업</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="wishItem : ${wishItems}">
+                    <td class="text-center align-middle">
+                        <img th:src="${wishItem.imgUrl}" class="rounded repImg" th:alt="${wishItem.itemNm}">
+                    </td>
+                    <td>
+                        <span th:text="${wishItem.itemNm}" class="fs24 font-weight-bold"></span>
+                    </td>
+                    <td class="text-center align-middle">
+                	         
+                        <button type="button" class="btn btn-danger" th:data-id="${wishItem.wishItemId}" onclick="deleteWishItem(this)">제거</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</html>

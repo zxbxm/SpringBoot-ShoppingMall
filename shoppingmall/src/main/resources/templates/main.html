@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SPRING MALL</title>
+
+    <!-- 스크립트 위치 이동 -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 쿠키 확인
+            var cookieName = "firstVisit";
+            var visited = document.cookie.indexOf(cookieName) !== -1;
+
+            // 만약 쿠키가 없다면
+            if (!visited) {
+                // 환영 메시지
+                alert("SPRING MALL에 오신 것을 환영합니다!");
+
+                // 쿠키 설정
+                var expires = new Date();
+                expires.setDate(expires.getDate() + 1);
+                document.cookie = cookieName + "=true; expires=" + expires.toUTCString() + "; path=/";
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div layout:fragment="content">
+
+       <div id="carouselControls" class="carousel slide margin" data-ride="carousel">
+            <div class="carousel-inner justify-content-center">
+                <div class="carousel-item active item">
+                    <img class="d-block w-100 mx-auto banner" src="/image/mainbannerimage.png" alt="1 slide">
+                </div>
+                <div class="carousel-item item">
+                    <img class="d-block w-100 mx-auto banner" src="/image/mainbannerimage2.png" alt="2slide">
+                </div>
+                <div class="carousel-item item">
+                    <img class="d-block w-100 mx-auto banner" src="/image/mainbannerimage3.png" alt="3slide">
+                </div>
+                <div class="carousel-item item">
+                    <img class="d-block w-100 mx-auto banner" src="/image/mainbannerimage4.png" alt="4slide">
+                </div>
+                <div class="carousel-item item">
+                    <img class="d-block w-100 mx-auto banner" src="/image/mainbannerimage5.png" alt="5slide">
+                </div>
+                <div class="carousel-item item">
+                    <img class="d-block w-100 mx-auto banner" src="/image/mainbannerimage6.png" alt="6 slide">
+                </div>
+                <!-- 추가 이미지를 필요한 만큼 추가할 수 있습니다 -->
+            </div>
+        </div>
+
+    <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
+    <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="center">
+        <span class="h3 font-weight-bold" th:text="${itemSearchDto.searchQuery}" style="color:red;"></span>
+        <span class="h5 font-weight-bold" style="color:rgb(0, 128, 0);">&nbsp; 검색결과</span>
+    </div><br>
+
+    <div class="row">
+        <th:block th:each="item, status: ${items.getContent()}">
+            <div class="col-md-4 margin">
+                <div class="card">
+                    <a th:href="'/item/' +${item.id}" class="text-dark">
+                        <img th:src="${item.imgUrl}" class="card-img-top" th:alt="${item.itemNm}" height="400">
+                        <div class="card-body">
+                            <h4 class="card-title">[[${item.itemNm}]]</h4>
+                            <p class="card-text">[[${item.itemDetail}]]</p>
+                            <h3 class="card-title text-danger">[[${item.price}]] 원</h3>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </th:block>
+    </div>
+
+    <div th:with="start=${(items.number/maxPage)*maxPage + 1}, end=(${(items.totalPages == 0) ? 1 : (start + (maxPage - 1) < items.totalPages ? start + (maxPage - 1) : items.totalPages)})" >
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item" th:classappend="${items.number eq 0}?'disabled':''">
+                <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number-1}}" aria-label='Previous' class="page-link">
+                    <span aria-hidden='true'>이전</span>
+                </a>
+            </li>
+
+            <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${items.number eq page-1}?'active':''">
+                <a th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${page-1}}" th:inline="text" class="page-link">[[${page}]]</a>
+            </li>
+
+            <li class="page-item" th:classappend="${items.number+1 ge items.totalPages}?'disabled':''">
+                <a th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number+1}}" aria-label='Next' class="page-link">
+                    <span aria-hidden='true'>다음</span>
+                </a>
+            </li>
+
+        </ul>
+    </div> 
+
+
+    </div>
+</body>
+
+</html>
